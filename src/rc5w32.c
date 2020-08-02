@@ -125,13 +125,14 @@ static void _DecryptBlock(RC5w32* self, const uint32_t* ct, uint32_t* pt)
 void RC5w32_Encrypt(RC5w32* self, const uint8_t* in, uint8_t* out, uint16_t size)
 {
     int i, n;
-
+    uint32_t block[2];
     assert(size >= 8);
-
-    memcpy(out, in, size);
     n = size - 8 + 1;
+    memcpy(out, in, size);
     for (i = 0; i < n; ++i) {
-        _EncryptBlock(self, (const uint32_t*)(out + i), (uint32_t*)(out + i));
+        memcpy(block, (out + i), 8);
+        _EncryptBlock(self, block, block);
+        memcpy((out + i), block, 8);
     }
 }
 
@@ -139,12 +140,13 @@ void RC5w32_Encrypt(RC5w32* self, const uint8_t* in, uint8_t* out, uint16_t size
 void RC5w32_Decrypt(RC5w32* self, const uint8_t* in, uint8_t* out, uint16_t size)
 {
     int i, n;
-
+    uint32_t block[2];
     assert(size >= 8);
-
     memcpy(out, in, size);
     n = size - 8 + 1;
     for (i = 0; i < n; ++i) {
-        _DecryptBlock(self, (const uint32_t*)(out + size - i - 8), (uint32_t*)(out + size - i - 8));
+        memcpy(block, (out + size - i - 8), 8);
+        _DecryptBlock(self, block, block);
+        memcpy((out + size - i - 8), block, 8);
     }
 }

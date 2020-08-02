@@ -66,39 +66,15 @@ void assert_not_equal(int nround, int nkey, int data_size, const uint8_t* key1, 
 }
 
 //-------------------------------------------------------------------------------------------------
-void TestRC5w32Key4()
-{
-    for (int i = 0; i < 10000; ++i) {
-        run_test(10, 4, 32);
-    }
-}
-
-//-------------------------------------------------------------------------------------------------
-void TestRC5w32Key8()
-{
-    for (int i = 0; i < 10000; ++i) {
-        run_test(9, 8, 32);
-    }
-}
-
-//-------------------------------------------------------------------------------------------------
-void TestRC5w32Key16()
-{
-    for (int i = 0; i < 10000; ++i) {
-        run_test(10, 16, 32);
-    }
-}
-
-//-------------------------------------------------------------------------------------------------
-void TestRC5w32KeyCollisions()
+void TestRC5w32KeyCollisions(int data_size)
 {
     uint8_t key1[255];
     uint8_t key2[255];
 
     //key size from 1 to 255
     for (int nkey = 1; nkey < 255; ++nkey) {
-        //for 1000 random keys and data
-        for (int i = 0; i < 1000; ++i) {
+        //for 100 random keys and data
+        for (int i = 0; i < 100; ++i) {
             //generate equal key pair
             for (int k = 0; k < nkey; ++k) {
                 key1[k] = rand() % 255;
@@ -112,7 +88,7 @@ void TestRC5w32KeyCollisions()
 
             //rounds from 0 to 32
             for (int k = 0; k < 32; ++k) {
-                assert_not_equal(k, nkey, 32, key1, key2);
+                assert_not_equal(k, nkey, data_size, key1, key2);
             }
         }
     }
@@ -121,9 +97,19 @@ void TestRC5w32KeyCollisions()
 //-------------------------------------------------------------------------------------------------
 int main()
 {
-    TestRC5w32Key4();
-    TestRC5w32Key8();
-    TestRC5w32Key16();
-    TestRC5w32KeyCollisions();
+    for (int i = 0; i < 10000; ++i) {
+        run_test(18, 4, 32);
+        run_test(18, 8, 32);
+        run_test(18, 16, 32);
+        run_test(18, 35, 32);
+
+        run_test(18, 4, 31);
+        run_test(18, 8, 31);
+        run_test(18, 16, 31);
+        run_test(18, 35, 31);
+    }
+
+    TestRC5w32KeyCollisions(32);
+    TestRC5w32KeyCollisions(33);
     return 0;
 }
